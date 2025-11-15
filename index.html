@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>智仿星伴 - AI无人机精准作业虚拟仿真实训系统</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🤖</text></svg>">
+    <style>
+        /* 基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        :root {
+            --primary: #2563eb;
+            --primary-dark: #1d4ed8;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --text: #1f2937;
+            --text-light: #6b7280;
+            --bg: #f8fafc;
+            --card-bg: #ffffff;
+            --shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 400px;
+            gap: 24px;
+            min-height: 90vh;
+        }
+
+        /* 头部样式 */
+        .header {
+            background: var(--card-bg);
+            padding: 32px;
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            text-align: center;
+            grid-column: 1 / -1;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 2.5rem;
+            margin-bottom: 12px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: var(--text-light);
+            font-size: 1.2rem;
+            margin-bottom: 8px;
+        }
+
+        .tech-stack {
+            display: flex;
+            justify-content: center;
+            gap: 16px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+        }
+
+        .tech-tag {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        /* 主内容区 */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
+        }
+
+        /* 实训模块网格 */
+        .training-modules {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .module-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            border: 2px solid transparent;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+        }
+
+        .module-card:hover {
+            transform: translateY(-8px);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(37, 99, 235, 0.15);
+        }
+
+        .module-icon {
+            width: 64px;
+            height: 64px;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 20px;
+            color: white;
+            font-size: 28px;
+        }
+
+        .module-card h3 {
+            color: var(--text);
+            margin-bottom: 12px;
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .module-card p {
+            color: var(--text-light);
+            font-size: 0.95rem;
+            line-height: 1.5;
+            margin-bottom: 20px;
+            flex: 1;
+        }
+
+        .progress-container {
+            width: 100%;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 8px;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--secondary));
+            border-radius: 4px;
+            transition: width 0.5s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.85rem;
+            color: var(--text-light);
+        }
+
+        /* 虚拟仿真区域 */
+        .simulation-section {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: var(--shadow);
+        }
+
+        .simulation-section h3 {
+            color: var(--text);
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sim-canvas {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(160deg, #87CEEB, #98FB98);
+            border-radius: 12px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+            border: 3px solid #e5e7eb;
+        }
+
+        .drone {
+            position: absolute;
+            width: 50px;
+            height: 50px;
+            background: #1f2937;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 2s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+
+        .field {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(90deg, #22c55e, #16a34a);
+            border-top: 3px solid #15803d;
+        }
+
+        .obstacle {
+            position: absolute;
+            width: 30px;
+            height: 30px;
+            background: #dc2626;
+            border-radius: 50%;
+            bottom: 80px;
+            left: 70%;
+        }
+
+        .sim-controls {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .sim-btn {
+            padding: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .sim-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .sim-btn:active {
+            transform: translateY(0);
+        }
+
+        /* 聊天面板 */
+        .chat-panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .chat-header {
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
+            text-align: center;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border-radius: 20px 20px 0 0;
+        }
+
+        .chat-header h3 {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            font-size: 1.2rem;
+        }
+
+        .chat-messages {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            background: #f8fafc;
+        }
+
+        .message {
+            max-width: 85%;
+            padding: 16px 20px;
+            border-radius: 18px;
+            line-height: 1.5;
+            animation: messageAppear 0.3s ease-out;
+            position: relative;
+        }
+
+        @keyframes messageAppear {
+            from {
+                opacity: 0;
+                transform: translateY(10px) scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .user-message {
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 6px;
+        }
+
+        .ai-message {
+            background: white;
+            border: 2px solid #e5e7eb;
+            margin-right: auto;
+            border-bottom-left-radius: 6px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .ai-avatar {
+            display: inline-block;
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, var(--secondary), #059669);
+            color: white;
+            border-radius: 50%;
+            text-align: center;
+            line-height: 28px;
+            margin-right: 10px;
+            font-size: 14px;
+            font-weight: bold;
+            vertical-align: middle;
+        }
+
+        .quick-questions {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+            background: white;
+        }
+
+        .quick-questions h4 {
+            color: var(--text-light);
+            margin-bottom: 12px;
+            font-size: 0.9rem;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .quick-buttons {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 8px;
+        }
+
+        .quick-btn {
+            padding: 10px 12px;
+            background: white;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            color: var(--text);
+            text-align: center;
+        }
+
+        .quick-btn:hover {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+            transform: translateY(-1px);
+        }
+
+        .input-area {
+            padding: 20px;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 12px;
+            background: white;
+            border-radius: 0 0 20px 20px;
+        }
+
+        .input-area input {
+            flex: 1;
+            padding: 14px 20px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s ease;
+            background: #f8fafc;
+        }
+
+        .input-area input:focus {
+            border-color: var(--primary);
+            background: white;
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .input-area button {
+            padding: 14px 24px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            white-space: nowrap;
+        }
+
+        .input-area button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(37, 99, 235, 0.3);
+        }
+
+        .input-area button:active {
+            transform: translateY(0);
+        }
+
+        .typing-indicator {
+            display: none;
+            padding: 16px 20px;
+            color: var(--text-light);
+            font-style: italic;
+            font-size: 0.9rem;
+            background: white;
+            margin: 0 20px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .typing-dots {
+            display: inline-block;
+        }
+
+        .typing-dots::after {
+            content: '...';
+            animation: typing 1.5s infinite;
+        }
+
+        @keyframes typing {
+            0%, 20% { content: '.'; }
+            40% { content: '..'; }
+            60%, 100% { content: '...'; }
+        }
+
+        /* 演示提示 */
+        .demo-notice {
+            background: linear-gradient(135deg, #fef3c7, #fef7cd);
+            border: 2px solid #f59e0b;
+            padding: 16px 20px;
+            margin: 16px 20px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            color: #92400e;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        /* 响应式设计 */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .chat-panel {
+                height: 600px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .training-modules {
+                grid-template-columns: 1fr;
+            }
+            
+            .sim-controls {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .quick-buttons {
+                grid-template-columns: 1fr;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .tech-stack {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+
+        /* 滚动条样式 */
+        .chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .chat-messages::-webkit-scrollbar-track {
+            background: #f1f5f9;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .chat-messages::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 头部 -->
+        <div class="header">
+            <h1>🤖 智仿星伴 - AI无人机精准作业虚拟仿真实训系统</h1>
+            <p>人工智能赋能职业教育 • 虚拟仿真与AI学伴深度融合</p>
+            <div class="tech-stack">
+                <span class="tech-tag">AI智能学伴</span>
+                <span class="tech-tag">虚拟仿真</span>
+                <span class="tech-tag">深度学习</span>
+                <span class="tech-tag">精准农业</span>
+            </div>
+        </div>
+
+        <!-- 左侧主内容区 -->
+        <div class="main-content">
+            <!-- 实训模块网格 -->
+            <div class="training-modules">
+                <div class="module-card" onclick="activateModule('planning')">
+                    <div class="module-icon">
+                        🛩️
+                    </div>
+                    <h3>智能航线规划</h3>
+                    <p>学习复杂地形下的无人机航线规划策略，掌握效率优化与安全边界设置，培养空间思维能力。</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 75%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>学习进度</span>
+                            <span>75%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="module-card" onclick="activateModule('parameters')">
+                    <div class="module-icon">
+                        ⚙️
+                    </div>
+                    <h3>飞行参数优化</h3>
+                    <p>掌握飞行高度、速度、雾滴参数等多维度协同优化，适应不同作物和环境的作业需求。</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 60%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>学习进度</span>
+                            <span>60%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="module-card" onclick="activateModule('disease')">
+                    <div class="module-icon">
+                        🔍
+                    </div>
+                    <h3>病虫害智能识别</h3>
+                    <p>基于计算机视觉的病虫害识别技术，学习诊断特征和精准施药方案，提升防治效果。</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 45%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>学习进度</span>
+                            <span>45%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="module-card" onclick="activateModule('troubleshoot')">
+                    <div class="module-icon">
+                        🛠️
+                    </div>
+                    <h3>故障排查与应急</h3>
+                    <p>掌握无人机常见故障的诊断方法和紧急情况处置流程，培养安全操作意识和应急能力。</p>
+                    <div class="progress-container">
+                        <div class="progress-bar">
+                            <div class="progress" style="width: 30%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>学习进度</span>
+                            <span>30%</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 虚拟仿真区域 -->
+            <div class="simulation-section">
+                <h3>🎮 虚拟仿真实训平台</h3>
+                <div class="sim-canvas">
+                    <div class="drone">🚁</div>
+                    <div class="field"></div>
+                    <div class="obstacle"></div>
+                </div>
+                <div class="sim-controls">
+                    <button class="sim-btn" onclick="takeoff()">起飞</button>
+                    <button class="sim-btn" onclick="planRoute()">规划航线</button>
+                    <button class="sim-btn" onclick="spray()">模拟喷洒</button>
+                    <button class="sim-btn" onclick="land()">安全降落</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 右侧AI对话面板 -->
+        <div class="chat-panel">
+            <div class="chat-header">
+                <h3>🤖 AI学伴助手 • 智仿星伴</h3>
+            </div>
+
+            <div class="demo-notice">
+                💡 深度交互演示系统 - 点击模块或按钮体验AI智能指导
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+                <div class="message ai-message">
+                    <span class="ai-avatar">AI</span>
+                    <strong>欢迎使用智仿星伴AI实训系统！</strong><br><br>
+                    🎯 我可以为您提供专业的无人机实训指导：<br>
+                    • 智能航线规划与优化<br>
+                    • 飞行参数设置与调整<br>
+                    • 病虫害识别与防治方案<br>
+                    • 故障排查与应急处置<br><br>
+                    💡 请点击左侧实训模块开始学习，或直接向我提问！
+                </div>
+            </div>
+
+            <div class="typing-indicator" id="typingIndicator">
+                <span class="ai-avatar">AI</span> 
+                <span class="typing-dots">思考中</span>
+            </div>
+
+            <div class="quick-questions">
+                <h4>🚀 快捷提问</h4>
+                <div class="quick-buttons">
+                    <button class="quick-btn" onclick="askQuickQuestion('飞行高度')">飞行高度优化</button>
+                    <button class="quick-btn" onclick="askQuickQuestion('航线规划')">航线规划策略</button>
+                    <button class="quick-btn" onclick="askQuickQuestion('病虫害')">病害识别诊断</button>
+                    <button class="quick-btn" onclick="askQuickQuestion('故障排查')">故障应急处置</button>
+                </div>
+            </div>
+
+            <div class="input-area">
+                <input type="text" id="userInput" placeholder="向AI学伴提问..." onkeypress="handleKeyPress(event)">
+                <button onclick="sendMessage()" id="sendBtn">发送</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 智能知识库 - 基于真实教学场景
+        const knowledgeBase = {
+            // 航线规划类
+            '航线规划': {
+                question: '梯形田块怎么规划航线最省时？',
+                answer: `🤖 **智仿星伴AI助教**：
+
+🎯 **推荐"分段规划法" - 基于计算几何的优化方案**
+
+📐 **数学模型分析：**
+• 将梯形分解为：1个矩形 + 2个直角三角形
+• 矩形区域采用**L×θ航线规划算法**
+• 三角形区域采用**斜向补充航线优化**
+
+⚡ **效率提升验证：**
+• 传统方法：总航程 = 2×(a+b)/sinθ
+• 分段优化：总航程减少 30-40%
+• 电池续航：提升 25% 以上
+
+💡 **虚拟实训任务：**
+在仿真系统中尝试不同分割方案，观察航程变化曲线，理解算法背后的数学原理！`
+            },
+
+            // 飞行参数类
+            '飞行高度': {
+                question: '无人机最佳飞行高度如何科学确定？',
+                answer: `🤖 **智仿星伴AI助教**：
+
+🌾 **多因子决策模型：**
+
+📊 **影响因子权重分析：**
+• 作物冠层结构 (权重: 0.3)
+• 环境风速条件 (权重: 0.25)  
+• 雾滴物化特性 (权重: 0.2)
+• 作业效率要求 (权重: 0.15)
+• 安全边界约束 (权重: 0.1)
+
+🔬 **沉积均匀性函数：**
+Deposition(h) = k₁·e^(-k₂·h) + k₃·h
+其中 h 为飞行高度，k₁,k₂,k₃ 为作物相关参数
+
+🎯 **推荐参数空间：**
+• 矮秆作物：2.0-2.5m (优化区间)
+• 高秆作物：2.8-3.5m (安全边界)
+• 果树园林：3.5-4.5m (冠层适应)`
+            },
+
+            // 病虫害识别类
+            '病虫害': {
+                question: '如何基于症状进行病虫害智能诊断？',
+                answer: `🤖 **智仿星伴AI助教**：
+
+🔍 **多模态诊断框架：**
+
+🟡 **视觉特征提取：**
+• 病斑形状：圆形/椭圆形/不规则形
+• 颜色分布：黄化/褐变/白粉/黑斑  
+• 空间分布：叶面/叶背/茎秆/根系
+• 发展动态：点状→片状→整体
+
+🧬 **病原推理网络：**
+输入症状 → 特征编码 → 病原匹配 → 置信度输出
+
+💊 **精准防治决策树：**
+1. 生物防治 (有益微生物)
+2. 物理防治 (光谱诱杀)  
+3. 化学防治 (精准施药)
+4. 生态调控 (环境优化)
+
+🚁 **无人机参数映射：**
+根据病害类型自动推荐飞行高度、雾滴粒径、作业速度`
+            },
+
+            // 故障排查类
+            '故障排查': {
+                question: '飞行中GPS信号丢失的应急处置流程？',
+                answer: `🤖 **智仿星伴AI助教**：
+
+🆘 **基于风险评估的应急决策树：**
+
+🚨 **实时状态评估：**
+• 剩余电量 > 30% → 执行返航程序
+• 剩余电量 10-30% → 紧急迫降
+• 剩余电量 < 10% → 立即降落
+
+🎯 **多模态控制切换：**
+1. **GPS模式** (正常) → 精确定位
+2. **视觉定位** (备用) → 图像稳定
+3. **姿态模式** (应急) → 手动操控
+4. **自动悬停** (安全) → 等待救援
+
+🔧 **故障溯源分析：**
+• 电磁干扰源定位
+• 硬件模块诊断  
+• 软件算法校验
+• 环境因素评估`
+            }
+        };
+
+        // DOM元素引用
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendBtn = document.getElementById('sendBtn');
+        const typingIndicator = document.getElementById('typingIndicator');
+        const drone = document.querySelector('.drone');
+
+        // 当前激活模块
+        let activeModule = null;
+
+        // 发送消息函数
+        async function sendMessage() {
+            const question = userInput.value.trim();
+            if (!question) return;
+            
+            // 禁用输入和按钮
+            userInput.disabled = true;
+            sendBtn.disabled = true;
+            
+            // 显示用户消息
+            addMessage('user', question);
+            userInput.value = '';
+            
+            // 显示思考中
+            typingIndicator.style.display = 'block';
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            
+            // 模拟AI思考时间
+            setTimeout(() => {
+                const aiResponse = findBestAnswer(question);
+                
+                // 隐藏思考中，显示AI回答
+                typingIndicator.style.display = 'none';
+                addMessage('ai', aiResponse);
+                
+                // 重新启用输入和按钮
+                userInput.disabled = false;
+                sendBtn.disabled = false;
+                userInput.focus();
+            }, 1800);
+        }
+
+        // 智能匹配答案
+        function findBestAnswer(question) {
+            const lowerQuestion = question.toLowerCase();
+            
+            // 关键词匹配
+            for (const [keyword, data] of Object.entries(knowledgeBase)) {
+                if (lowerQuestion.includes(keyword.toLowerCase()) || 
+                    lowerQuestion.includes(data.question.toLowerCase())) {
+                    return data.answer;
+                }
+            }
+            
+            // 默认回答
+            return `🤖 **智仿星伴AI助教**：
+
+🔍 **深度分析模式启动**
+
+💡 您的问题触发了我的**知识发现机制**！在真实的AI教学系统中，我会：
+
+🧠 **认知处理流程：**
+1. 问题解析 → 语义理解 → 知识检索
+2. 多源验证 → 逻辑推理 → 方案生成
+3. 教学适配 → 交互优化 → 反馈收集
+
+📚 **知识图谱构建：**
+• 连接 2000+ 农业无人机知识节点
+• 实时更新最新技术规范
+• 个性化学习路径推荐
+
+🎯 **建议行动：**
+点击上方实训模块，体验结构化学习路径，或重新表述您的问题！`;
+        }
+
+        // 模块激活函数
+        function activateModule(module) {
+            activeModule = module;
+            const modules = {
+                'planning': '智能航线规划',
+                'parameters': '飞行参数优化', 
+                'disease': '病虫害智能识别',
+                'troubleshoot': '故障排查与应急'
+            };
+            
+            const moduleIntro = {
+                'planning': `🎯 **${modules[module]}模块已激活！**
+
+🧠 **认知准备就绪** - 我可以为您提供：
+
+📐 **算法级指导：**
+• 航线规划数学模型
+• 效率优化理论框架
+• 安全边界计算原理
+• 实时路径调整策略
+
+💡 **深度学习建议：**
+理解算法背后的数学原理，而不仅是操作步骤！`,
+                'parameters': `🎯 **${modules[module]}模块已激活！**
+
+⚖️ **多目标优化引擎启动**
+
+🔬 **参数协同分析：**
+• 飞行高度-速度 Pareto 前沿
+• 雾滴沉积分布函数
+• 环境因子影响权重
+• 作业效率平衡点
+
+🎯 **科学决策支持：**
+基于数据驱动的参数优化建议`,
+                'disease': `🎯 **${modules[module]}模块已激活！**
+
+👁️ **计算机视觉诊断模式**
+
+🔍 **智能识别框架：**
+• 多尺度特征提取
+• 病理模式匹配
+• 严重程度评估
+• 防治方案生成
+
+💊 **精准施药映射：**
+病害类型 → 药剂选择 → 飞行参数`,
+                'troubleshoot': `🎯 **${modules[module]}模块已激活！**
+
+🛡️ **安全防护体系启动**
+
+🔧 **故障诊断树：**
+• 传感器数据异常检测
+• 控制系统状态监控
+• 应急决策逻辑推理
+• 安全操作规程验证
+
+🎯 **能力培养目标：**
+系统性思维 + 应急反应能力`
+            };
+            
+            addMessage('ai', moduleIntro[module]);
+        }
+
+        // 快捷提问
+        function askQuickQuestion(type) {
+            if (knowledgeBase[type]) {
+                userInput.value = knowledgeBase[type].question;
+                sendMessage();
+            }
+        }
+
+        // 添加消息到聊天窗口
+        function addMessage(role, content) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${role}-message`;
+            
+            if (role === 'ai') {
+                const formattedContent = content.replace(/\n/g, '<br>').replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+                messageDiv.innerHTML = `<span class="ai-avatar">AI</span>${formattedContent}`;
+            } else {
+                messageDiv.textContent = content;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        // 无人机仿真控制
+        function takeoff() {
+            drone.style.top = '25%';
+            drone.style.transition = 'all 2s ease';
+            addMessage('ai', '🚁 **无人机起飞程序执行**\n\n📊 系统状态监控：\n• 动力系统：正常\n• 传感器：校准完成\n• 通信链路：稳定\n• 安全边界：已设置\n\n💡 起飞后建议悬停检查各项参数！');
+        }
+
+        function planRoute() {
+            drone.style.transition = 'all 3s cubic-bezier(0.4, 0, 0.2, 1)';
+            drone.style.left = '75%';
+            setTimeout(() => { 
+                drone.style.left = '25%';
+                drone.style.top = '35%';
+            }, 1500);
+            addMessage('ai', '📐 **智能航线规划中...**\n\n🎯 优化目标：\n• 航程最短化\n• 能量最优化\n• 覆盖最大化\n• 安全确保化\n\n💡 基于实时环境数据的动态路径规划！');
+        }
+
+        function spray() {
+            addMessage('ai', '💧 **精准施药作业启动**\n\n🌱 作业参数实时监控：\n• 雾滴粒径分布：150±20μm\n• 沉积均匀性：>85%\n• 飘移损失：<5%\n• 作业效率：3.5亩/分钟\n\n🔬 变量施药技术应用！');
+        }
+
+        function land() {
+            drone.style.top = '50%';
+            drone.style.left = '50%';
+            drone.style.transition = 'all 2s ease';
+            addMessage('ai', '🛬 **安全降落程序执行**\n\n✅ 任务完成总结：\n• 飞行时间：15分钟\n• 作业面积：52.5亩\n• 电池余量：35%\n• 数据记录：完整\n\n📋 建议进行设备检查和数据备份！');
+        }
+
+        // 回车发送
+        function handleKeyPress(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        // 页面加载初始化
+        window.onload = function() {
+            userInput.focus();
+            
+            // 添加欢迎消息
+            setTimeout(() => {
+                addMessage('ai', `🎓 **教学系统初始化完成**
+
+🤖 **智仿星伴AI实训平台** - 技术特色：
+
+🧠 **认知智能架构：**
+• 知识图谱驱动的智能推理
+• 多模态人机交互
+• 个性化学习路径
+• 实时能力评估
+
+🚀 **虚拟仿真引擎：**
+• 物理精确的飞行模拟
+• 真实农业作业场景
+• 多环境条件适配
+• 安全操作训练
+
+💡 **使用建议：**
+点击模块开始结构化学习，或直接提问进行探索式学习！`);
+            }, 1000);
+        };
+    </script>
+</body>
+</html>
